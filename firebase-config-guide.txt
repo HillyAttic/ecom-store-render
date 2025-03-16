@@ -1,0 +1,34 @@
+FIREBASE CONFIG GUIDE
+
+To fix the API key issue, follow these steps:
+
+1. Go to your Firebase console: https://console.firebase.google.com/
+2. Select your project: handloomdb-5178c
+3. Click the gear icon (⚙️) near the top left and select "Project settings"
+4. Scroll down to the "Your apps" section
+5. Select your Web app (it should have a </> icon)
+6. In the Firebase SDK snippet section, select "Config"
+7. Copy the ENTIRE firebaseConfig object
+
+Your config should look similar to this:
+
+const firebaseConfig = {
+  apiKey: "AIzaSy...[complete API key here]",
+  authDomain: "handloomdb-5178c.firebaseapp.com",
+  databaseURL: "https://handloomdb-5178c-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "handloomdb-5178c",
+  storageBucket: "handloomdb-5178c.appspot.com",
+  messagingSenderId: "1015373364569",
+  appId: "1:1015373364569:web:..."
+};
+
+Once you have the correct config:
+
+1. Compare the apiKey value with what's in your .env.local file
+2. If they're different, update your .env.local file with the correct apiKey value:
+   NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSy...[complete API key here]
+
+3. Restart your development server with:
+   cd ecom-store && npm run dev
+
+The API key in the Firebase console is the correct one and must match exactly for client-side Firebase authentication to work. 

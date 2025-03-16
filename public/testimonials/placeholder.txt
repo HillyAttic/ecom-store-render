@@ -1,0 +1,13 @@
+Please add the following testimonial images to this directory:
+
+1. indian-businessman-1.jpg - Photo of Rajesh Sharma, Garment Manufacturer from Delhi
+2. indian-businesswoman-1.jpg - Photo of Priya Patel, Boutique Owner from Mumbai
+3. indian-businessman-2.jpg - Photo of Vikram Mehta, Textile Wholesaler from Surat
+4. indian-businesswoman-2.jpg - Photo of Ananya Reddy, Fashion Designer from Bangalore
+5. indian-businessman-3.jpg - Photo of Sunil Agarwal, Apparel Exporter from Tirupur
+
+These should be professional headshots of Indian business people in the textile/fashion industry.
+
+Until you can add these images, the testimonials section may show broken images.
+
+Alternative solution: You can modify the Testimonials.tsx file to use placeholder colors instead of images if you prefer not to add these image files. 
