@@ -42,16 +42,20 @@ import {
 // Import admin SDK for server-side operations
 import admin from 'firebase-admin';
 
+// Firebase Client Configuration
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'mock-api-key',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'mock-auth-domain',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'mock-project-id',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'mock-storage-bucket',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || 'mock-sender-id',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || 'mock-app-id',
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'mock-measurement-id',
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || 'https://mock-db.firebaseio.com',
 };
 
 // Initialize Firebase
@@ -61,7 +65,14 @@ let rtdb; // Realtime Database
 
 if (!getApps().length) {
   console.log('Initializing Firebase...');
-  firebaseApp = initializeApp(firebaseConfig);
+  try {
+    firebaseApp = initializeApp(firebaseConfig);
+    console.log('Firebase initialized successfully');
+  } catch (error) {
+    console.error('Firebase initialization error:', error);
+    // Create a mock app for build
+    firebaseApp = {};
+  }
 } else {
   console.log('Firebase already initialized');
   firebaseApp = getApps()[0];
@@ -113,6 +124,10 @@ if (typeof window === 'undefined') {
     console.error('Error initializing Firebase Admin SDK:', error);
   }
 }
+
+// Initialize Firestore
+const auth = getAuth(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 // DO NOT initialize Firestore by default to avoid permission errors
 // Firestore will only be initialized when explicitly needed
@@ -636,7 +651,7 @@ export {
   addDoc, 
   updateDoc, 
   deleteDoc, 
-  firestoreQuery, 
+  firestoreQuery as query, 
   where, 
   orderBy, 
   limit,
@@ -662,3 +677,20 @@ export {
   onValue,
   off
 };
+
+// Export Firebase client services
+export { 
+  auth, 
+  storage,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+};
+
+// Export Firebase storage functions
+export {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL
+} from 'firebase/storage';

@@ -11,7 +11,10 @@ import {
   orderBy, 
   serverTimestamp,
   convertDocToObj,
-  prepareDataForFirestore
+  prepareDataForFirestore,
+  setDoc,
+  deleteDoc,
+  limit
 } from '@/utils/firebase';
 
 // Simple in-memory cache for orders
@@ -69,6 +72,19 @@ const orderCache = {
     this.userOrders.clear();
     this.orderDetails.clear();
   }
+};
+
+// Define the orders collection name
+const COLLECTION_NAME = 'orders';
+
+// Helper function to get orders collection reference
+const getOrdersCollection = () => {
+  return collection(db, COLLECTION_NAME);
+};
+
+// Helper function to get order document reference
+const getOrderDoc = (orderId) => {
+  return doc(db, COLLECTION_NAME, orderId);
 };
 
 // Get all orders for a user
@@ -190,7 +206,7 @@ export async function createOrder(orderData) {
     };
     
     // Add the order to Firestore
-    const ordersRef = collection(db, 'orders');
+    const ordersRef = getOrdersCollection();
     const docRef = await addDoc(ordersRef, prepareDataForFirestore(orderToCreate));
     console.log('Order created with ID:', docRef.id);
     
@@ -381,5 +397,101 @@ export async function getOrderCountsByStatus(userId) {
   } catch (error) {
     console.error('Error getting order counts:', error);
     throw new Error('Failed to get order counts');
+  }
+}
+
+// Get all orders
+export async function getAllOrders() {
+  try {
+    const ordersRef = getOrdersCollection();
+    const querySnapshot = await getDocs(query(ordersRef, orderBy('createdAt', 'desc')));
+    
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error getting all orders:', error);
+    throw error;
+  }
+}
+
+// Get orders by user ID
+export async function getOrdersByUserId(userId) {
+  try {
+    const ordersRef = getOrdersCollection();
+    const q = query(ordersRef, where('userId', '==', userId), orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error getting user orders:', error);
+    throw error;
+  }
+}
+
+// Update order
+export async function updateOrder(orderId, updateData) {
+  try {
+    const orderRef = getOrderDoc(orderId);
+    await updateDoc(orderRef, {
+      ...updateData,
+      updatedAt: new Date().toISOString()
+    });
+    return { id: orderId, ...updateData };
+  } catch (error) {
+    console.error('Error updating order:', error);
+    throw error;
+  }
+}
+
+// Delete order
+export async function deleteOrder(orderId) {
+  try {
+    const orderRef = getOrderDoc(orderId);
+    await deleteDoc(orderRef);
+    return { id: orderId };
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    throw error;
+  }
+}
+
+// Get order counts by status
+export async function getOrderCounts() {
+  try {
+    const ordersRef = getOrdersCollection();
+    const querySnapshot = await getDocs(ordersRef);
+    
+    const counts = {
+      total: querySnapshot.size,
+      pending: 0,
+      processing: 0,
+      shipped: 0,
+      delivered: 0,
+      cancelled: 0
+    };
+    
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.status && counts[data.status] !== undefined) {
+        counts[data.status]++;
+      }
+    });
+    
+    return counts;
+  } catch (error) {
+    console.error('Error getting order counts:', error);
+    return {
+      total: 0,
+      pending: 0,
+      processing: 0,
+      shipped: 0,
+      delivered: 0,
+      cancelled: 0
+    };
   }
 } 

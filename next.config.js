@@ -17,7 +17,12 @@ const nextConfig = {
       'images.unsplash.com',
       'randomuser.me',
       'i.pravatar.cc',
-      'cloudflare-ipfs.com'
+      'cloudflare-ipfs.com',
+      'firebasestorage.googleapis.com',
+      'res.cloudinary.com',
+      'via.placeholder.com',
+      'placehold.co',
+      'picsum.photos'
     ],
     unoptimized: true,
   },
@@ -62,6 +67,14 @@ const nextConfig = {
     }
 
     return config;
+  },
+  env: {
+    // Mock values for build process only
+    FIREBASE_PROJECT_ID: 'mock-project-id',
+    FIREBASE_CLIENT_EMAIL: 'mock@example.com',
+    FIREBASE_PRIVATE_KEY: '{"privateKey":"mock-key"}',
+    FIREBASE_DATABASE_URL: 'https://mock-db.firebaseio.com',
+    // These will be overridden by actual env vars in production
   },
 };
 

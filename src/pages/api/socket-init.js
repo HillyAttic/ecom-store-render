@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 import { 
   db, 
   collection, 
-  firestoreQuery as query, 
+  query, 
   where, 
   onSnapshot, 
   adminRtdbHelpers
